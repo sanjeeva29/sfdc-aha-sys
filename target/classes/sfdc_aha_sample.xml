@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+	<http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="ciscospinfra.aha.io" port="443" doc:name="HTTP Request Configuration"/>
+	<http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+	<sfdc:cached-basic-config name="Salesforce__Basic_Authentication" username="bakollur@cisco.com.dcp" password="Ch@ndu$12345" url="https://ciscosales--dcp.my.salesforce.com/services/Soap/u/36.0/00D54000000lYvd" doc:name="Salesforce: Basic Authentication"/>
+	<flow name="sfdc_aha_sampleFlow">
+		<http:listener config-ref="HTTP_Listener_Configuration" path="/test" doc:name="HTTP"/>
+		<logger message="&quot;Started&quot;" level="INFO" doc:name="Logger"/>
+		<http:request config-ref="HTTP_Request_Configuration" path="/api/v1/products/MIG/ideas" method="GET" doc:name="HTTP">
+			<http:request-builder>
+				<http:query-param paramName="fields" value="*"/>
+				<http:query-param paramName="updated_since" value="2022-03-30T15:50:54.462Z"/>
+				<http:header headerName="Authorization" value="Bearer c809181cb58a0e199f902cf5f9fbe201858469fb665d6f47ea188d3dc21cebbd"/>
+			</http:request-builder>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" message="#[payload]"/>
+		<dw:transform-message doc:name="Transform Message" metadata:id="3b38b08b-459d-443e-97c8-9186103388d9">
+			<dw:input-payload mimeType="application/json"/>
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+[{
+	Name: "Test123",
+    CFS__c: "Test",
+    CRD__c: "Test"
+  
+}]
+
+     
+  
+ ]]></dw:set-payload>
+		</dw:transform-message>
+
+		<sfdc:create config-ref="Salesforce__Basic_Authentication"  type="AhaIdeaSummary__c" doc:name="Salesforce">
+			<sfdc:objects ref="#[payload]"/>
+
+		</sfdc:create>
+		<logger message="#[payload]" level="INFO" doc:name="Logger"/>
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+
+"salesforce create sucessfull"]]></dw:set-payload>
+		</dw:transform-message>
+		<logger message="processcompleted" level="INFO" doc:name="Logger"/>
+	</flow>
+</mule>
