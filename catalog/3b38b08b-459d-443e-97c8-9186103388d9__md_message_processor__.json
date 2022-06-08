@@ -1,0 +1,16 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "Response"
+        }
+    },
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "Salesforce__Basic_Authentication",
+            "typeId": "AhaIdeaSummary__c"
+        }
+    },
+    "id": "3b38b08b-459d-443e-97c8-9186103388d9",
+    "version": "5.2.0.0"
+}
