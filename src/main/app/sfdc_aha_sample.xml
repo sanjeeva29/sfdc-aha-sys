@@ -53,6 +53,6 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 		</dw:transform-message>
 		<logger message="processcompleted" level="INFO" doc:name="Logger"/>
 		<logger message="completed" level="INFO" doc:name="Logger"/>
-		<logger message="test logger" level="INFO" doc:name="Logger"/>
+		<logger level="INFO" doc:name="Logger" message="process"/>
 	</flow>
 </mule>
